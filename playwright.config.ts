@@ -4,6 +4,8 @@ import { defineConfig, devices } from '@playwright/test';
 // that is the environment the permanence plan promises will work.
 export default defineConfig({
   testDir: './tests',
+  // Only .spec.ts here. tests/unit/*.test.ts belongs to vitest.
+  testMatch: /.*\.spec\.ts$/,
   fullyParallel: true,
   reporter: [['list']],
   use: { trace: 'off' },

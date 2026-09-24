@@ -28,3 +28,37 @@ The STS block renderers (1237 lines) couple only to `API_BASE_URL` in two places
 almost unchanged and guarantee the output looks identical to STS. The STS editors (3676 lines) are
 built around server uploads, image limits and orphan cleanup, none of which exist without a
 database, so they are rewritten against the same schema instead.
+
+## 2026-09-24 Phases 1 through 6 built
+
+The maker takes a build from nothing to a downloadable website entirely in the
+browser. Verified by 11 end-to-end tests and 4 unit tests, all loading the built
+file over `file://` with the network blocked.
+
+What is proven rather than asserted: a build made in the maker exports to a zip
+the system `unzip` accepts, whose extracted site opens from disk with every
+image loading; a downloaded site loads back into the maker for editing; work in
+progress survives closing the tab; the single file archive opens with its photos
+inlined; and the maker saves a copy of itself that is a working application.
+
+## 2026-09-24 The generated site is a second Vite entry, not a hand-written template
+
+The viewer builds from the same renderer components the preview uses and is
+inlined into the maker as a string. Writing the output HTML by hand would have
+meant two implementations of the same markup drifting apart, and the whole
+appeal of the port was that the output looks like seethespecs without anyone
+maintaining that resemblance.
+
+## 2026-09-24 Two bugs the round-trip test caught that nothing else would have
+
+`$state.snapshot` is a compiler rune and does nothing in a plain `.ts` module. It
+threw at runtime inside a `try`, so the exporter and the autosave both failed
+with no visible symptom. Both now call a helper exported from the rune-aware
+module.
+
+IndexedDB's structured clone refuses a Proxy, so image records read straight out
+of `$state` could never be stored. The bare `catch` around the save hid it. The
+save now warns on the console and a test asserts the warning stays absent.
+
+Both were invisible to type checking and to any test that did not exercise the
+whole path. That is the argument for keeping the round-trip test first-class.

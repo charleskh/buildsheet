@@ -50,7 +50,7 @@
 
 <header class="topbar">
   <div class="brand">
-    <span class="wordmark">buildsheet</span>
+    <h1 class="wordmark">buildsheet</h1>
     {#if started && build.meta.name}<span class="current">{build.meta.name}</span>{/if}
   </div>
   <div class="topbar-actions">
@@ -113,7 +113,15 @@
     background: var(--surface, #141414); position: sticky; top: 0; z-index: 20;
   }
   .brand { display: flex; align-items: baseline; gap: 0.75rem; min-width: 0; }
-  .wordmark { font-family: var(--font-family-heading, inherit); font-weight: 700; letter-spacing: 0.02em; }
+  /* The wordmark is the page heading, so the maker has a real h1 rather than
+     starting the document outline at h2. */
+  .wordmark {
+    font-family: var(--font-family-heading, inherit);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    font-size: var(--text-lg, 1.125rem);
+    margin: 0;
+  }
   .current { color: var(--text-muted, #999); font-size: var(--text-sm, 0.875rem); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .topbar-actions { display: flex; align-items: center; gap: 0.5rem; }
   .tabs { display: flex; gap: 0.25rem; }

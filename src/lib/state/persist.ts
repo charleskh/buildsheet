@@ -54,13 +54,18 @@ export async function saveDraft(): Promise<boolean> {
     const draft: StoredDraft = {
       meta: snapshot(build.meta),
       blocks: snapshot(build.blocks) as ContentBlock[],
-      images: build.images.map((image) => ({
-        id: image.id,
-        baseName: image.baseName,
-        width: image.width,
-        height: image.height,
-        files: image.files
-      })),
+      // Snapshot before storing. These records live inside $state, so their
+      // nested objects are reactive proxies, and IndexedDB's structured clone
+      // refuses a proxy outright. Storing them raw fails every save.
+      images: build.images.map((image) =>
+        snapshot({
+          id: image.id,
+          baseName: image.baseName,
+          width: image.width,
+          height: image.height,
+          files: image.files
+        })
+      ),
       savedAt: Date.now()
     };
     await new Promise<void>((resolve, reject) => {
@@ -71,10 +76,22 @@ export async function saveDraft(): Promise<boolean> {
     });
     db.close();
     return true;
-  } catch {
-    // Storage denied or full. The app keeps working, the person just loses the safety net.
+  } catch (error) {
+    // Storage denied, full, or the payload refused the structured clone. The app
+    // keeps working; the person just loses the safety net. Surfaced on the
+    // console because a silently broken autosave is worse than a noisy one, and
+    // this exact failure already shipped once.
+    console.warn('buildsheet: could not save your work in progress.', error);
+    lastSaveError = error instanceof Error ? error.message : String(error);
     return false;
   }
+}
+
+/** Last save failure, exposed so the interface and the tests can see it. */
+export let lastSaveError: string | null = null;
+
+export function autosaveError(): string | null {
+  return lastSaveError;
 }
 
 export async function loadDraft(): Promise<{ savedAt: number; name: string } | null> {

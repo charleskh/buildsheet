@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches-ignore: []
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        run: pnpm check
+
+      - name: Build
+        run: pnpm build
+
+      - name: Unit tests
+        run: pnpm test:unit
+
+      - name: Install browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      # The end-to-end tests load the built file over file:// with the network
+      # blocked, because that is the environment this project promises works.
+      - name: End-to-end tests
+        run: pnpm test:e2e
+
+      # The page legitimately LINKS to other sites, so this looks only for
+      # references that LOAD something: scripts, stylesheets, fonts, images.
+      - name: Check the maker stayed self-contained
+        run: |
+          if grep -oE 'url\((https?:)?//[^)]*\)|src="(https?:)?//[^"]*"|<link[^>]*stylesheet[^>]*>|\.woff2?"' dist/index.html; then
+            echo "The built maker loads something from outside itself. It must stay one file."
+            exit 1
+          fi
+          echo "Self-contained: nothing is loaded from the network."
