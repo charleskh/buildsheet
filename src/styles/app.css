@@ -1,9 +1,118 @@
-:root {
-  color-scheme: dark;
-  font-family: system-ui, sans-serif;
-}
+/* Import order mirrors the seethespecs layout so the cascade matches:
+   Tailwind and DaisyUI first, then the fonts, then the tokens that override
+   DaisyUI's colours with the buildsheet semantic palette. */
+@import 'tailwindcss/tailwind.css';
+@import '@fontsource/saira-semi-condensed/latin-500.css';
+@import '@fontsource/saira-semi-condensed/latin-600.css';
+@import '@fontsource/saira-semi-condensed/latin-700.css';
+@import '../lib/styles/design-tokens.css';
+
+/* ---------------------------------------------------------------------------
+   Form and control styling for the maker's own interface.
+   The ported seethespecs renderers bring their own Tailwind classes; these are
+   for the editor chrome around them.
+   --------------------------------------------------------------------------- */
+
 body {
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: var(--font-family-base);
   margin: 0;
-  background: #121212;
-  color: #f2f2f2;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.form-field > span {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+input[type='text'],
+input[type='url'],
+input[type='date'],
+select,
+textarea {
+  /* 16px minimum: anything smaller makes iOS zoom the page on focus and stay
+     zoomed after navigating, which reads to the user as a broken layout. */
+  font-size: max(1rem, 16px);
+  font-family: inherit;
+  color: var(--input-text);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.55rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--input-placeholder);
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 1px;
+}
+
+button {
+  font-family: inherit;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+  /* Comfortable enough to hit on a phone without aiming. */
+  min-height: 2.25rem;
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--border-strong);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+button.primary {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary-text);
+  font-weight: 600;
+}
+
+button.danger:hover:not(:disabled) {
+  border-color: var(--status-danger);
+  color: var(--status-danger);
+}
+
+.add-row {
+  align-self: flex-start;
+}
+
+.field-hint {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.field-warning {
+  font-size: var(--text-sm);
+  color: var(--status-danger);
+  margin: 0;
+}
+
+a {
+  color: var(--text-link);
 }

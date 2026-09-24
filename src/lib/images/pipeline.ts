@@ -8,6 +8,8 @@
  * caller is told about progress after every single file.
  */
 
+import { asBlobPart } from '../bytes';
+
 /** Long-edge caps, mirroring the tiers seethespecs generates. */
 export const TIERS = {
   full: { maxEdge: 2560, quality: 0.85 },
@@ -104,7 +106,7 @@ export async function processOne(file: File, id: number): Promise<ProcessedImage
     width: bitmap.width,
     height: bitmap.height,
     files,
-    previewUrl: URL.createObjectURL(new Blob([files.thumb.bytes], { type: 'image/jpeg' }))
+    previewUrl: URL.createObjectURL(new Blob([asBlobPart(files.thumb.bytes)], { type: 'image/jpeg' }))
   };
 
   bitmap.close();

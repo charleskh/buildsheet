@@ -10,6 +10,8 @@
  * under 4 GiB. A build that large is not a case this tool supports.
  */
 
+import { asBlobPart } from '../bytes';
+
 const CRC_TABLE = (() => {
   const table = new Uint32Array(256);
   for (let i = 0; i < 256; i++) {
@@ -138,7 +140,9 @@ export function makeZip(entries: ZipEntry[], now = new Date()): Blob {
   end.u32(bodyBytes.length);
   end.u16(0); // comment length
 
-  return new Blob([bodyBytes, centralBytes, end.concat()], { type: 'application/zip' });
+  return new Blob([asBlobPart(bodyBytes), asBlobPart(centralBytes), asBlobPart(end.concat())], {
+    type: 'application/zip'
+  });
 }
 
 /** Trigger a browser download. Works from file:// as well as over http. */
