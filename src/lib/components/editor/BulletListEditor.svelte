@@ -29,18 +29,18 @@
   <input type="text" bind:value={block.header} oninput={() => build.touch()} placeholder="Optional" />
 </label>
 
-<div class="items">
+<div class="bs-items">
   {#each block.items as item, i (i)}
     <div class="item">
-      <div class="item-head">
+      <div class="bs-item-head">
         <input type="text" bind:value={item.text} oninput={() => build.touch()} placeholder="Item" />
         <button type="button" onclick={() => addSubItem(i)} aria-label="Add a sub item">+</button>
         <button type="button" onclick={() => removeItem(i)} aria-label="Remove item">✕</button>
       </div>
       {#if item.subItems?.length}
-        <div class="subs">
+        <div class="bs-subs">
           {#each item.subItems as sub, j (j)}
-            <div class="sub">
+            <div class="bs-sub">
               <input type="text" bind:value={sub.text} oninput={() => build.touch()} placeholder="Sub item" />
               <button type="button" onclick={() => removeSubItem(i, j)} aria-label="Remove sub item">✕</button>
             </div>
@@ -54,8 +54,8 @@
 <button type="button" class="add-row" onclick={addItem}>Add an item</button>
 
 <style>
-  .items { display: flex; flex-direction: column; gap: 0.5rem; }
-  .item-head { display: grid; grid-template-columns: 1fr auto auto; gap: 0.5rem; }
-  .subs { display: flex; flex-direction: column; gap: 0.35rem; margin: 0.35rem 0 0 1.5rem; }
-  .sub { display: grid; grid-template-columns: 1fr auto; gap: 0.5rem; }
+  .bs-items { display: flex; flex-direction: column; gap: 0.5rem; }
+  .bs-item-head { display: grid; grid-template-columns: 1fr auto auto; gap: 0.5rem; }
+  .bs-subs { display: flex; flex-direction: column; gap: 0.35rem; margin: 0.35rem 0 0 1.5rem; }
+  .bs-sub { display: grid; grid-template-columns: 1fr auto; gap: 0.5rem; }
 </style>

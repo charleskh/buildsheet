@@ -61,7 +61,7 @@ test('a build made in the maker exports to a site that renders offline', async (
 
   // Cover photo is the first image input on the page.
   await attachPhoto(page, 0);
-  await expect(page.locator('img.cover')).toBeVisible({ timeout: 15_000 });
+  await expect(page.locator('img.bs-cover')).toBeVisible({ timeout: 15_000 });
 
   // ---- a spec list
   await page.getByRole('button', { name: 'Add a section' }).click();
@@ -76,11 +76,11 @@ test('a build made in the maker exports to a site that renders offline', async (
   await page.getByRole('button', { name: /^Gallery/ }).click();
   const galleryInputIndex = 1; // cover picker is 0, the gallery picker follows
   await attachPhoto(page, galleryInputIndex, 2000, 1500);
-  await expect(page.locator('.grid figure')).toHaveCount(1, { timeout: 15_000 });
+  await expect(page.locator('.bs-grid figure')).toHaveCount(1, { timeout: 15_000 });
 
   // ---- preview renders through the same components the export uses
   await page.getByRole('button', { name: 'Preview' }).click();
-  await expect(page.locator('.preview-pane')).toContainText('302 Windsor');
+  await expect(page.locator('.bs-preview-pane')).toContainText('302 Windsor');
 
   // ---- export
   await page.getByRole('button', { name: 'Publish' }).click();
@@ -134,4 +134,48 @@ test('a build made in the maker exports to a site that renders offline', async (
   }
 
   expect(pageErrors).toEqual([]);
+});
+
+test('the generated page lays out correctly and does not collide with DaisyUI', async ({ page, context }) => {
+  // DaisyUI ships component classes under ordinary names: .hero is display:grid
+  // with its children stacked in one cell. Svelte's scoping adds a class rather
+  // than removing ours, so a name clash silently restyles the page. Every class
+  // this project defines is prefixed bs- for that reason, and this test checks
+  // the outcome rather than the convention.
+  await page.goto(MAKER);
+  await page.getByRole('button', { name: 'Start', exact: true }).click();
+  await page.getByPlaceholder('1978 F150 4x4').fill('Layout Test');
+  await attachPhoto(page, 0, 2400, 1400);
+  await expect(page.locator('img.bs-cover')).toBeVisible({ timeout: 15_000 });
+
+  await page.getByRole('button', { name: 'Publish' }).click();
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download my site' }).click();
+
+  const dir = mkdtempSync(join(tmpdir(), 'buildsheet-layout-'));
+  try {
+    const zipPath = join(dir, 'site.zip');
+    await (await downloadPromise).saveAs(zipPath);
+    execFileSync('unzip', ['-q', zipPath, '-d', join(dir, 'site')]);
+
+    const site = await context.newPage();
+    await site.setViewportSize({ width: 1280, height: 900 });
+    await site.goto(pathToFileURL(join(dir, 'site/index.html')).href);
+
+    const geometry = await site.evaluate(() => {
+      const box = (sel: string) => {
+        const el = document.querySelector(sel);
+        if (!el) return null;
+        const r = el.getBoundingClientRect();
+        return { top: r.top, bottom: r.bottom, display: getComputedStyle(el).display };
+      };
+      return { hero: box('.bs-hero'), image: box('.bs-hero-image'), title: box('h1') };
+    });
+
+    expect(geometry.hero!.display).toBe('block');
+    // The title must sit below the cover photo, not on top of it.
+    expect(geometry.title!.top).toBeGreaterThanOrEqual(geometry.image!.bottom);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 });

@@ -25,7 +25,7 @@
   }
 </script>
 
-<div class="meta">
+<div class="bs-meta">
   <label class="form-field">
     <span>Build name</span>
     <input type="text" bind:value={build.meta.name} oninput={() => build.touch()} placeholder="1978 F150 4x4" />
@@ -37,7 +37,7 @@
       placeholder="Regular cab, short bed, 1-ton axles and 40 inch tires." />
   </label>
 
-  <div class="pair">
+  <div class="bs-pair">
     <label class="form-field">
       <span>Started</span>
       <input type="date" bind:value={build.meta.startDate} oninput={() => build.touch()} />
@@ -55,19 +55,19 @@
 
   <div class="form-field">
     <span>Cover photo</span>
-    {#if cover}<img class="cover" src={cover.previewUrl} alt="Cover" />{/if}
+    {#if cover}<img class="bs-cover" src={cover.previewUrl} alt="Cover" />{/if}
     <ImagePicker multiple={false} label={cover ? 'Replace cover photo' : 'Choose a cover photo'} onadded={onCoverAdded} />
   </div>
 
   <div class="form-field">
     <span>Tags</span>
-    <div class="tag-input">
+    <div class="bs-tag-input">
       <input type="text" bind:value={tagInput} placeholder="Ford"
         onkeydown={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())} />
       <button type="button" onclick={addTag}>Add</button>
     </div>
     {#if build.meta.tags.length}
-      <ul class="tags">
+      <ul class="bs-tags">
         {#each build.meta.tags as tag (tag)}
           <li><button type="button" onclick={() => removeTag(tag)} aria-label="Remove tag {tag}">{tag} ✕</button></li>
         {/each}
@@ -77,10 +77,10 @@
 </div>
 
 <style>
-  .meta { display: flex; flex-direction: column; gap: 0.9rem; }
-  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-  @media (max-width: 40rem) { .pair { grid-template-columns: 1fr; } }
-  .cover { max-width: 100%; max-height: 12rem; display: block; margin-bottom: 0.5rem; }
-  .tag-input { display: grid; grid-template-columns: 1fr auto; gap: 0.5rem; }
-  .tags { display: flex; flex-wrap: wrap; gap: 0.35rem; list-style: none; padding: 0; margin: 0.5rem 0 0; }
+  .bs-meta { display: flex; flex-direction: column; gap: 0.9rem; }
+  .bs-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  @media (max-width: 40rem) { .bs-pair { grid-template-columns: 1fr; } }
+  .bs-cover { max-width: 100%; max-height: 12rem; display: block; margin-bottom: 0.5rem; }
+  .bs-tag-input { display: grid; grid-template-columns: 1fr auto; gap: 0.5rem; }
+  .bs-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; list-style: none; padding: 0; margin: 0.5rem 0 0; }
 </style>

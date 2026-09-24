@@ -72,7 +72,7 @@ test('imports a seethespecs build and drops references to images that no longer 
   // The build lands in the editor with its metadata intact.
   await expect(page.getByPlaceholder('1978 F150 4x4')).toHaveValue('1978 F150 4x4', { timeout: 20_000 });
   await expect(page.getByPlaceholder('Shown as the byline')).toHaveValue('DaChy');
-  await expect(page.locator('.tags')).toContainText('Ford');
+  await expect(page.locator('.bs-tags')).toContainText('Ford');
 
   // The gallery editor reports the dangling references rather than rendering blanks.
   await expect(page.locator('.field-warning')).toContainText('2 photo references');
@@ -84,7 +84,7 @@ test('imports a seethespecs build and drops references to images that no longer 
 
   // Export must not carry the dead ids through to the finished page.
   await page.getByRole('button', { name: 'Publish' }).click();
-  await expect(page.locator('.summary')).toContainText('2 photo references');
+  await expect(page.locator('.bs-summary')).toContainText('2 photo references');
 
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Download my site' }).click();

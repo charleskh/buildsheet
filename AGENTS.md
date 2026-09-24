@@ -139,3 +139,20 @@ not what.
 The interface is written for someone who has never opened a terminal. Say what
 will happen and what they should expect to see. "Your site is live" beats
 "deployment succeeded."
+
+## CSS class naming
+
+**Every class this project defines is prefixed `bs-`.** DaisyUI ships component
+classes under ordinary English names: `hero`, `card`, `tabs`, `steps`,
+`progress`, `collapse`. Svelte's scoped styles add a hash class rather than
+removing yours, so a name clash means DaisyUI's rule still applies. `.hero` is
+`display: grid` with its children stacked in one cell, which silently put the
+build title on top of the cover photo and passed every test that only checked
+for text.
+
+The ported seethespecs components are the exception and keep their Tailwind
+utility classes. Do not prefix those.
+
+`tests/roundtrip.spec.ts` asserts the outcome rather than the convention: it
+measures that the title sits below the cover image and that `.bs-hero` computes
+to `display: block`.

@@ -62,3 +62,15 @@ save now warns on the console and a test asserts the warning stays absent.
 
 Both were invisible to type checking and to any test that did not exercise the
 whole path. That is the argument for keeping the round-trip test first-class.
+
+## 2026-09-24 All project CSS classes are prefixed bs-
+
+DaisyUI occupies ordinary class names (`hero`, `card`, `tabs`, `steps`,
+`progress`, `collapse`) and Svelte scoping does not displace them, so `.hero`
+quietly became `display: grid` and stacked the build title on top of the cover
+photo. Every assertion still passed, because the text was all present and the
+images all loaded. Only looking at a screenshot found it.
+
+Prefixing removes the whole category rather than the one instance, which matters
+because DaisyUI's component list changes between versions. A layout test now
+measures the result, since a convention nobody checks is not a guarantee.

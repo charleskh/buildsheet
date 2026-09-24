@@ -28,7 +28,7 @@ async function makeSmallBuild(page: Page, name: string) {
   await page.getByPlaceholder('1978 F150 4x4').fill(name);
   await page.getByPlaceholder('Shown as the byline').fill('Owner');
   await attachPhoto(page, 0);
-  await expect(page.locator('img.cover')).toBeVisible({ timeout: 15_000 });
+  await expect(page.locator('img.bs-cover')).toBeVisible({ timeout: 15_000 });
   await page.getByRole('button', { name: 'Add a section' }).click();
   await page.getByRole('button', { name: /^Text/ }).click();
   await page.getByPlaceholder('What happened, what you learned').fill('It took four years.');
@@ -54,7 +54,7 @@ test('a downloaded site can be loaded back in and edited', async ({ page, contex
     await expect(second.getByPlaceholder('1978 F150 4x4')).toHaveValue('Reload Test', { timeout: 20_000 });
     await expect(second.getByPlaceholder('Shown as the byline')).toHaveValue('Owner');
     await expect(second.getByPlaceholder('What happened, what you learned')).toHaveValue('It took four years.');
-    await expect(second.locator('img.cover')).toBeVisible();
+    await expect(second.locator('img.bs-cover')).toBeVisible();
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
@@ -74,10 +74,10 @@ test('work in progress survives closing the tab', async ({ page, context }) => {
 
   const second = await context.newPage();
   await second.goto(MAKER);
-  await expect(second.locator('.card.highlight')).toContainText('Autosave Test', { timeout: 15_000 });
+  await expect(second.locator('.bs-card.bs-highlight')).toContainText('Autosave Test', { timeout: 15_000 });
   await second.getByRole('button', { name: 'Pick up where I left off' }).click();
   await expect(second.getByPlaceholder('1978 F150 4x4')).toHaveValue('Autosave Test');
-  await expect(second.locator('img.cover')).toBeVisible();
+  await expect(second.locator('img.bs-cover')).toBeVisible();
   expect(warnings.filter((w) => w.includes('could not save'))).toEqual([]);
 });
 
@@ -89,7 +89,7 @@ test('the single file archive opens on its own with images built in', async ({ p
     await page.getByRole('button', { name: 'Publish' }).click();
 
     const downloadPromise = page.waitForEvent('download');
-    await page.locator('.extra-row', { hasText: 'A single file copy' }).getByRole('button').click();
+    await page.locator('.bs-extra-row', { hasText: 'A single file copy' }).getByRole('button').click();
     const archivePath = join(dir, 'archive.html');
     await (await downloadPromise).saveAs(archivePath);
 
@@ -123,7 +123,7 @@ test('the maker saves a working copy of itself', async ({ page, context }) => {
     await page.getByRole('button', { name: 'Publish' }).click();
 
     const downloadPromise = page.waitForEvent('download');
-    await page.locator('.extra-row', { hasText: 'A copy of buildsheet itself' }).getByRole('button').click();
+    await page.locator('.bs-extra-row', { hasText: 'A copy of buildsheet itself' }).getByRole('button').click();
     const copyPath = join(dir, 'buildsheet.html');
     await (await downloadPromise).saveAs(copyPath);
     expect(statSync(copyPath).size).toBeGreaterThan(100_000);

@@ -48,22 +48,22 @@
   });
 </script>
 
-<header class="topbar">
-  <div class="brand">
-    <h1 class="wordmark">buildsheet</h1>
-    {#if started && build.meta.name}<span class="current">{build.meta.name}</span>{/if}
+<header class="bs-topbar">
+  <div class="bs-brand">
+    <h1 class="bs-wordmark">buildsheet</h1>
+    {#if started && build.meta.name}<span class="bs-current">{build.meta.name}</span>{/if}
   </div>
-  <div class="topbar-actions">
+  <div class="bs-topbar-actions">
     {#if started}
-      <nav class="tabs" aria-label="Sections">
-        <button type="button" class:active={tab === 'build'} onclick={() => (tab = 'build')}>Build</button>
-        <button type="button" class:active={tab === 'preview'} onclick={() => (tab = 'preview')}>Preview</button>
-        <button type="button" class:active={tab === 'publish'} onclick={() => (tab = 'publish')}>Publish</button>
+      <nav class="bs-tabs" aria-label="Sections">
+        <button type="button" class:bs-active={tab === 'build'} onclick={() => (tab = 'build')}>Build</button>
+        <button type="button" class:bs-active={tab === 'preview'} onclick={() => (tab = 'preview')}>Preview</button>
+        <button type="button" class:bs-active={tab === 'publish'} onclick={() => (tab = 'publish')}>Publish</button>
       </nav>
     {/if}
     <button
       type="button"
-      class="theme"
+      class="bs-theme"
       onclick={() => (theme = theme === 'dark' ? 'light' : 'dark')}
       aria-label="Switch to {theme === 'dark' ? 'light' : 'dark'} theme"
     >
@@ -72,22 +72,22 @@
   </div>
 </header>
 
-<main class="shell">
+<main class="bs-shell">
   {#if !started}
     <StartPanel {draft} ondone={() => (started = true)} />
   {:else if tab === 'build'}
-    <div class="columns">
-      <section class="pane">
+    <div class="bs-columns">
+      <section class="bs-pane">
         <h2>About the build</h2>
         <MetaForm />
       </section>
-      <section class="pane">
+      <section class="bs-pane">
         <h2>Sections</h2>
         <BlockList />
       </section>
     </div>
   {:else if tab === 'preview'}
-    <div class="preview-pane">
+    <div class="bs-preview-pane">
       {#if build.blocks.length === 0}
         <p class="field-hint">Nothing to preview yet. Add a section on the Build tab.</p>
       {:else}
@@ -99,7 +99,7 @@
   {/if}
 </main>
 
-<footer class="appfoot">
+<footer class="bs-appfoot">
   <p>
     buildsheet runs entirely in this browser. Nothing you add is uploaded.
     <a href="https://charleskh.github.io/buildsheet">charleskh.github.io/buildsheet</a>
@@ -107,30 +107,30 @@
 </footer>
 
 <style>
-  .topbar {
+  .bs-topbar {
     display: flex; justify-content: space-between; align-items: center; gap: 1rem;
     padding: 0.6rem 1rem; border-bottom: 1px solid var(--border, #444);
     background: var(--surface, #141414); position: sticky; top: 0; z-index: 20;
   }
-  .brand { display: flex; align-items: baseline; gap: 0.75rem; min-width: 0; }
+  .bs-brand { display: flex; align-items: baseline; gap: 0.75rem; min-width: 0; }
   /* The wordmark is the page heading, so the maker has a real h1 rather than
      starting the document outline at h2. */
-  .wordmark {
+  .bs-wordmark {
     font-family: var(--font-family-heading, inherit);
     font-weight: 700;
     letter-spacing: 0.02em;
     font-size: var(--text-lg, 1.125rem);
     margin: 0;
   }
-  .current { color: var(--text-muted, #999); font-size: var(--text-sm, 0.875rem); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .topbar-actions { display: flex; align-items: center; gap: 0.5rem; }
-  .tabs { display: flex; gap: 0.25rem; }
-  .tabs button.active { border-color: var(--accent-primary, #bf8942); color: var(--accent-primary, #bf8942); }
-  .theme { min-width: 2.25rem; }
-  .shell { max-width: 80rem; margin: 0 auto; padding: 1.25rem 1rem 3rem; }
-  .columns { display: grid; grid-template-columns: 22rem 1fr; gap: 1.5rem; align-items: start; }
-  @media (max-width: 64rem) { .columns { grid-template-columns: 1fr; } }
-  .pane h2 { font-family: var(--font-family-heading, inherit); font-size: var(--text-xl, 1.25rem); margin: 0 0 0.75rem; }
-  .preview-pane { border: 1px solid var(--border-muted, #333); padding: 1.25rem; background: var(--surface, #141414); }
-  .appfoot { border-top: 1px solid var(--border-muted, #333); padding: 1rem; text-align: center; color: var(--text-muted, #999); font-size: var(--text-xs, 0.75rem); }
+  .bs-current { color: var(--text-muted, #999); font-size: var(--text-sm, 0.875rem); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bs-topbar-actions { display: flex; align-items: center; gap: 0.5rem; }
+  .bs-tabs { display: flex; gap: 0.25rem; }
+  .bs-tabs button.bs-active { border-color: var(--accent-primary, #bf8942); color: var(--accent-primary, #bf8942); }
+  .bs-theme { min-width: 2.25rem; }
+  .bs-shell { max-width: 80rem; margin: 0 auto; padding: 1.25rem 1rem 3rem; }
+  .bs-columns { display: grid; grid-template-columns: 22rem 1fr; gap: 1.5rem; align-items: start; }
+  @media (max-width: 64rem) { .bs-columns { grid-template-columns: 1fr; } }
+  .bs-pane h2 { font-family: var(--font-family-heading, inherit); font-size: var(--text-xl, 1.25rem); margin: 0 0 0.75rem; }
+  .bs-preview-pane { border: 1px solid var(--border-muted, #333); padding: 1.25rem; background: var(--surface, #141414); }
+  .bs-appfoot { border-top: 1px solid var(--border-muted, #333); padding: 1rem; text-align: center; color: var(--text-muted, #999); font-size: var(--text-xs, 0.75rem); }
 </style>

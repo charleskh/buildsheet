@@ -49,9 +49,9 @@
   </p>
 {/if}
 
-<div class="grid">
+<div class="bs-grid">
   {#each tiles as tile (tile.id)}
-    <figure class:cover={block.coverImageId === tile.id}>
+    <figure class:bs-cover={block.coverImageId === tile.id}>
       <img src={tile.image!.previewUrl} alt="" />
       <figcaption>
         <button type="button" onclick={() => move(tile.id, -1)} aria-label="Move earlier">←</button>
@@ -66,9 +66,19 @@
 <p class="field-hint">{tiles.length} photo{tiles.length === 1 ? '' : 's'} in this gallery.</p>
 
 <style>
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr)); gap: 0.5rem; margin-top: 0.75rem; }
+  .bs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr)); gap: 0.6rem; margin-top: 0.75rem; }
   figure { margin: 0; }
-  figure.cover img { outline: 2px solid var(--accent-primary, #bf8942); outline-offset: -2px; }
+  figure.bs-cover img { outline: 2px solid var(--accent-primary, #bf8942); outline-offset: -2px; }
   figure img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
   figcaption { display: flex; justify-content: center; gap: 0.15rem; }
+  /* Four controls have to fit the width of one tile, so they drop the comfortable
+     tap target the rest of the interface uses and rely on the tile for spacing. */
+  figcaption button {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 1.9rem;
+    padding: 0.2rem 0;
+    font-size: var(--text-xs, 0.75rem);
+    line-height: 1;
+  }
 </style>

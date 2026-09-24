@@ -59,23 +59,23 @@
   </button>
 
   {#if progress}
-    <div class="progress" role="status" aria-live="polite">
-      <div class="bar"><div class="fill" style="width:{(progress.done / Math.max(1, progress.total)) * 100}%"></div></div>
+    <div class="bs-progress" role="status" aria-live="polite">
+      <div class="bs-bar"><div class="bs-fill" style="width:{(progress.done / Math.max(1, progress.total)) * 100}%"></div></div>
       <p>Resizing {progress.done + 1} of {progress.total}. {progress.currentName}</p>
       <p class="field-hint">This happens on your computer. Nothing is uploaded.</p>
     </div>
   {/if}
 
   {#if failures.length}
-    <ul class="failures">
+    <ul class="bs-failures">
       {#each failures as failure (failure)}<li>{failure}</li>{/each}
     </ul>
   {/if}
 </div>
 
 <style>
-  .progress { margin-top: 0.5rem; }
-  .bar { height: 6px; background: var(--surface-sunken, #333); overflow: hidden; }
-  .fill { height: 100%; background: var(--accent-primary, #bf8942); transition: width 120ms linear; }
-  .failures { color: var(--status-danger, #dc2626); font-size: 0.85rem; margin-top: 0.5rem; padding-left: 1rem; }
+  .bs-progress { margin-top: 0.5rem; }
+  .bs-bar { height: 6px; background: var(--surface-sunken, #333); overflow: hidden; }
+  .bs-fill { height: 100%; background: var(--accent-primary, #bf8942); transition: width 120ms linear; }
+  .bs-failures { color: var(--status-danger, #dc2626); font-size: 0.85rem; margin-top: 0.5rem; padding-left: 1rem; }
 </style>

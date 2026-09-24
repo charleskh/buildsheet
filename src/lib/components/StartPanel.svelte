@@ -54,8 +54,8 @@
   }
 </script>
 
-<div class="start">
-  <section class="intro">
+<div class="bs-start">
+  <section class="bs-intro">
     <h2>Make a build page you can host anywhere</h2>
     <p>
       Fill in your build, add your photos, and download a finished website. Everything happens on
@@ -65,42 +65,42 @@
   </section>
 
   {#if draft}
-    <section class="card highlight">
+    <section class="bs-card bs-highlight">
       <h3>You have unsaved work</h3>
       <p>
         {draft.name || 'An unnamed build'}, last saved
         {new Date(draft.savedAt).toLocaleString()}.
       </p>
-      <div class="row">
+      <div class="bs-row">
         <button type="button" class="primary" onclick={doRestore}>Pick up where I left off</button>
         <button type="button" onclick={discardDraft}>Start over</button>
       </div>
     </section>
   {/if}
 
-  <section class="card">
+  <section class="bs-card">
     <h3>Start a new build</h3>
     <p>An empty page to fill in.</p>
     <button type="button" class="primary" onclick={ondone}>Start</button>
   </section>
 
-  <section class="card">
+  <section class="bs-card">
     <h3>Load a site I made earlier</h3>
     <p>Pick the zip buildsheet gave you and carry on editing it.</p>
     <input bind:this={zipInput} type="file" accept=".zip,application/zip" onchange={handleZip} hidden />
     <button type="button" onclick={() => zipInput?.click()}>Choose my zip</button>
   </section>
 
-  <section class="card">
+  <section class="bs-card">
     <h3>Bring a build over from seethespecs</h3>
     <p>Paste the address of a public build and it will be copied here, photos and all.</p>
-    <div class="row">
+    <div class="bs-row">
       <input type="text" bind:value={stsRef} placeholder="seethespecs.com/builds/1" />
       <button type="button" onclick={doImport} disabled={progress !== null || !stsRef}>Bring it over</button>
     </div>
     {#if progress}
-      <div class="progress" role="status" aria-live="polite">
-        <div class="bar"><div class="fill" style="width:{(progress.done / Math.max(1, progress.total)) * 100}%"></div></div>
+      <div class="bs-progress" role="status" aria-live="polite">
+        <div class="bs-bar"><div class="bs-fill" style="width:{(progress.done / Math.max(1, progress.total)) * 100}%"></div></div>
         <p>{progress.message}</p>
       </div>
     {/if}
@@ -111,16 +111,16 @@
 </div>
 
 <style>
-  .start { display: flex; flex-direction: column; gap: 1rem; max-width: 42rem; margin: 0 auto; }
-  .intro h2 { font-family: var(--font-family-heading, inherit); margin: 0 0 0.5rem; }
-  .intro p { color: var(--text-secondary, #bbb); margin: 0; }
-  .card { border: 1px solid var(--border, #444); background: var(--surface, #141414); padding: 1rem; }
-  .card.highlight { border-color: var(--accent-primary, #bf8942); }
-  .card h3 { margin: 0 0 0.25rem; }
-  .card p { margin: 0 0 0.75rem; color: var(--text-muted, #999); font-size: var(--text-sm, 0.875rem); }
-  .row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-  .row input { flex: 1 1 14rem; }
-  .progress { margin-top: 0.75rem; }
-  .bar { height: 6px; background: var(--surface-sunken, #333); overflow: hidden; }
-  .fill { height: 100%; background: var(--accent-primary, #bf8942); transition: width 120ms linear; }
+  .bs-start { display: flex; flex-direction: column; gap: 1rem; max-width: 42rem; margin: 0 auto; }
+  .bs-intro h2 { font-family: var(--font-family-heading, inherit); margin: 0 0 0.5rem; }
+  .bs-intro p { color: var(--text-secondary, #bbb); margin: 0; }
+  .bs-card { border: 1px solid var(--border, #444); background: var(--surface, #141414); padding: 1rem; }
+  .bs-card.bs-highlight { border-color: var(--accent-primary, #bf8942); }
+  .bs-card h3 { margin: 0 0 0.25rem; }
+  .bs-card p { margin: 0 0 0.75rem; color: var(--text-muted, #999); font-size: var(--text-sm, 0.875rem); }
+  .bs-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .bs-row input { flex: 1 1 14rem; }
+  .bs-progress { margin-top: 0.75rem; }
+  .bs-bar { height: 6px; background: var(--surface-sunken, #333); overflow: hidden; }
+  .bs-fill { height: 100%; background: var(--accent-primary, #bf8942); transition: width 120ms linear; }
 </style>

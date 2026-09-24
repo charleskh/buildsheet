@@ -53,13 +53,13 @@
   }
 </script>
 
-<div class="publish">
+<div class="bs-publish">
   {#if !build.meta.name}
     <p class="field-warning">Give the build a name first. It becomes the page title and the file name.</p>
   {/if}
 
   {#if summary}
-    <p class="summary">
+    <p class="bs-summary">
       {summary.photos} photo{summary.photos === 1 ? '' : 's'}, {summary.files} files,
       about {summary.megabytes.toFixed(1)} MB.
       {#if summary.dropped > 0}
@@ -74,8 +74,8 @@
     {/if}
   {/if}
 
-  <ol class="steps">
-    <li class:done={downloaded}>
+  <ol class="bs-steps">
+    <li class:bs-done={downloaded}>
       <h3>Download your site</h3>
       <p>A zip with your page, your photos and your text. Nothing is uploaded anywhere.</p>
       <button type="button" class="primary" onclick={downloadSite} disabled={working || !build.meta.name}>
@@ -93,7 +93,7 @@
       </p>
     </li>
 
-    <li class="warning-step">
+    <li class="bs-warning-step">
       <h3>Claim it within the hour</h3>
       <p>
         <strong>That first address disappears after one hour.</strong> On the Cloudflare page,
@@ -115,16 +115,16 @@
     </li>
   </ol>
 
-  <section class="extras">
+  <section class="bs-extras">
     <h3>Other copies worth having</h3>
-    <div class="extra-row">
+    <div class="bs-extra-row">
       <div>
         <strong>A single file copy of the build</strong>
         <p>One HTML file with the photos built into it. Works from a USB stick, offline, forever.</p>
       </div>
       <button type="button" onclick={downloadArchive} disabled={!build.meta.name}>Download</button>
     </div>
-    <div class="extra-row">
+    <div class="bs-extra-row">
       <div>
         <strong>A copy of buildsheet itself</strong>
         <p>
@@ -138,15 +138,15 @@
 </div>
 
 <style>
-  .publish { display: flex; flex-direction: column; gap: 1.5rem; }
-  .summary { color: var(--text-muted, #999); margin: 0; }
-  .steps { display: flex; flex-direction: column; gap: 1rem; padding-left: 1.25rem; margin: 0; }
-  .steps li { padding-left: 0.25rem; }
-  .steps h3 { margin: 0 0 0.25rem; font-size: var(--text-lg, 1.125rem); }
-  .steps p { margin: 0 0 0.5rem; }
-  .steps li.done h3::after { content: ' ✓'; color: var(--status-success, #16a34a); }
-  .warning-step { border-left: 3px solid var(--status-warning, #eab308); padding-left: 0.75rem; margin-left: -0.75rem; }
-  .extras { border-top: 1px solid var(--border-muted, #333); padding-top: 1rem; }
-  .extra-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.6rem 0; }
-  .extra-row p { margin: 0.15rem 0 0; font-size: var(--text-sm, 0.875rem); color: var(--text-muted, #999); }
+  .bs-publish { display: flex; flex-direction: column; gap: 1.5rem; }
+  .bs-summary { color: var(--text-muted, #999); margin: 0; }
+  .bs-steps { display: flex; flex-direction: column; gap: 1rem; padding-left: 1.25rem; margin: 0; }
+  .bs-steps li { padding-left: 0.25rem; }
+  .bs-steps h3 { margin: 0 0 0.25rem; font-size: var(--text-lg, 1.125rem); }
+  .bs-steps p { margin: 0 0 0.5rem; }
+  .bs-steps li.bs-done h3::after { content: ' ✓'; color: var(--status-success, #16a34a); }
+  .bs-warning-step { border-left: 3px solid var(--status-warning, #eab308); padding-left: 0.75rem; margin-left: -0.75rem; }
+  .bs-extras { border-top: 1px solid var(--border-muted, #333); padding-top: 1rem; }
+  .bs-extra-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.6rem 0; }
+  .bs-extra-row p { margin: 0.15rem 0 0; font-size: var(--text-sm, 0.875rem); color: var(--text-muted, #999); }
 </style>
