@@ -36,11 +36,11 @@ components and cannot drift apart.
 
 ## Branches
 
-Local work is on `work`. The default branch name is set when the repository is
-first published. Never push to a protected branch.
+The default branch is `main`. Never push to a protected branch without the CEO
+saying so explicitly.
 
-## Client context
+## Repository notes
 
-buildsheet is a firm client. The firm main loop is read-only on it; the work
-happens directly in this harness. See `handoffs/buildsheet-design-2026-09-24.md`
-for the plan this was built from, and `state/ledger.md` for what is open.
+`handoffs/` and `state/` are gitignored on purpose. They hold working records
+that are kept privately rather than published. If they ever need to sync between
+machines, they want a private repository, not this one.

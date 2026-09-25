@@ -5,3 +5,8 @@ playwright-report
 .DS_Store
 *.local
 dist-viewer
+
+# Harness records: firm-internal, deliberately not published.
+# These stay on caliban. The design doc also lives in the firm repo.
+handoffs/
+state/

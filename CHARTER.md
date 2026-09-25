@@ -8,9 +8,9 @@ hosts it themselves.
 
 ## Why it exists
 
-SeeTheSpecs (STS) proved the format works but will not earn enough to justify paying to host it.
-The build documents and the community around them are separable. This is the half that does not
-need a server, extracted so it can outlive the half that does.
+SeeTheSpecs (STS) proved the format works. The build documents and the community around them are
+separable: one needs a server and an operator, and one does not. This is the half that does not,
+extracted so a build page can outlive whatever service made it.
 
 ## What success looks like
 

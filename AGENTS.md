@@ -10,8 +10,9 @@ A static site generator that runs entirely in a browser. Someone fills in a
 build, the browser resizes their photos, and they download a zip containing a
 finished website. There is no server, no database, no account and no telemetry.
 
-It exists because SeeTheSpecs (STS) will not earn enough to justify paying to
-host it, and the document half of that product does not need a server at all.
+It exists because a build page should outlive whatever made it. The document
+half of SeeTheSpecs (STS) never needed a server, so it is extracted here as
+something anyone can run and host for themselves.
 
 ## The constraint everything else follows from
 
