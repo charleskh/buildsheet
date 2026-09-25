@@ -8,6 +8,7 @@
  */
 import type { BlockContent } from '$lib/features/blocks/types';
 import type { BuildImage } from '$lib/features/builds/types';
+import type { BuildLink } from '$lib/state/build.svelte';
 
 export interface SiteData {
   /** Format version of this wrapper, not of the block content. */
@@ -15,9 +16,9 @@ export interface SiteData {
   name: string;
   description: string;
   startDate: string;
-  category: string;
   author: string;
-  tags: string[];
+  /** Where to find the owner, shown in the page header. */
+  links: BuildLink[];
   coverImage: { url: string; mid: string; thumb: string } | null;
   content: BlockContent;
   images: BuildImage[];

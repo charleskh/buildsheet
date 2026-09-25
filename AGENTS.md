@@ -157,3 +157,29 @@ utility classes. Do not prefix those.
 `tests/roundtrip.spec.ts` asserts the outcome rather than the convention: it
 measures that the title sits below the cover image and that `.bs-hero` computes
 to `display: block`.
+
+## Build metadata
+
+Name, one-line description, start date, author, cover photo and links. There are
+deliberately **no tags and no categories**: those exist to organise a catalogue
+of many builds, and buildsheet makes exactly one page that its owner shares
+directly. Nothing browses or searches across builds, so they had no job.
+
+### Links
+
+`BuildMeta.links` is a list of `{ kind, value, label? }`. The value is stored as
+the person typed it, bare, and only becomes an href at render time via
+`linkHref`. Email is stored without the `mailto:` so the field is easy to fill
+in. The viewer runs every href through `safeHref`, which allows only
+`http:`, `https:` and `mailto:`, and drops the link entirely otherwise.
+
+### Cover photos are framed, not squeezed
+
+A cover is cropped to `COVER_ASPECT` (16:9) in the editor, and the page renders
+it at exactly that shape. Before this, the banner filled itself with whatever it
+was given, which on a tall photo took a band out of the middle and looked
+mangled.
+
+Cover images are the only ones that keep `sourceBytes`, so the framing can be
+changed later without picking the file again. Gallery photos deliberately do not:
+holding originals for a hundred of them is how a phone runs out of memory.

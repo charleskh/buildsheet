@@ -10,6 +10,8 @@
   import BlockContentRenderer from '$lib/components/blocks/BlockContentRenderer.svelte';
   import BlockTableOfContents from '$lib/components/blocks/BlockTableOfContents.svelte';
   import type { ModalImage } from '$lib/features/blocks/types';
+  import { LINK_LABELS, linkHref } from '$lib/state/build.svelte';
+  import { safeHref } from '$lib/utils/safeHref';
   import type { SiteData } from './types';
 
   let { data }: { data: SiteData } = $props();
@@ -23,6 +25,24 @@
           month: 'long'
         })
       : ''
+  );
+
+  /**
+   * Resolve links once, dropping anything the scheme allowlist rejects. A build
+   * page is published by its owner, but it may be re-exported from data someone
+   * else supplied, so the links get the same treatment as block content.
+   */
+  const links = $derived(
+    (data.links ?? [])
+      .filter((link) => link.value.trim() !== '')
+      .map((link) => ({
+        label: link.label?.trim() || LINK_LABELS[link.kind],
+        href: safeHref(linkHref(link)),
+        external: link.kind !== 'email'
+      }))
+      .filter((link): link is { label: string; href: string; external: boolean } =>
+        link.href !== undefined
+      )
   );
 
   function openLightbox(images: ModalImage[], index: number) {
@@ -55,11 +75,15 @@
         {#if data.author}<span>{data.author}</span>{/if}
         {#if data.author && started}<span aria-hidden="true">·</span>{/if}
         {#if started}<span>Started {started}</span>{/if}
-        {#if data.category}<span aria-hidden="true">·</span><span>{data.category}</span>{/if}
       </p>
-      {#if data.tags.length}
-        <ul class="bs-tags">
-          {#each data.tags as tag (tag)}<li>{tag}</li>{/each}
+      {#if links.length}
+        <ul class="bs-links">
+          {#each links as link (link.href)}
+            <li>
+              <a href={link.href} rel={link.external ? 'noreferrer noopener' : null}
+                 target={link.external ? '_blank' : null}>{link.label}</a>
+            </li>
+          {/each}
         </ul>
       {/if}
     </div>
@@ -106,12 +130,27 @@
 <style>
   .bs-page { max-width: var(--content-wide, 80rem); margin: 0 auto; padding: 0 1rem 4rem; }
   .bs-hero { padding: 1.5rem 0; }
-  .bs-hero-image { width: 100%; max-height: 32rem; object-fit: cover; display: block; margin-bottom: 1.25rem; }
+  /* The cover was framed to this exact shape in the editor, so the page shows
+     what the owner chose rather than cropping it a second time. */
+  .bs-hero-image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+    margin-bottom: 1.25rem;
+  }
   h1 { font-family: var(--font-family-heading, inherit); font-size: var(--text-4xl, 2.25rem); margin: 0 0 0.35rem; }
   .bs-tagline { color: var(--text-secondary, #bbb); margin: 0 0 0.5rem; font-size: var(--text-lg, 1.125rem); }
   .bs-byline { display: flex; flex-wrap: wrap; gap: 0.4rem; color: var(--text-muted, #999); margin: 0; font-size: var(--text-sm, 0.875rem); }
-  .bs-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; list-style: none; padding: 0; margin: 0.75rem 0 0; }
-  .bs-tags li { border: 1px solid var(--border, #444); padding: 0.1rem 0.5rem; font-size: var(--text-xs, 0.75rem); }
+  .bs-links { display: flex; flex-wrap: wrap; gap: 0.4rem; list-style: none; padding: 0; margin: 0.75rem 0 0; }
+  .bs-links a {
+    display: inline-block;
+    border: 1px solid var(--border, #444);
+    padding: 0.15rem 0.6rem;
+    font-size: var(--text-sm, 0.875rem);
+    text-decoration: none;
+  }
+  .bs-links a:hover { border-color: var(--accent-primary, #bf8942); }
   .bs-layout { display: grid; grid-template-columns: 16rem 1fr; gap: 2rem; align-items: start; }
   .bs-toc { position: sticky; top: 1rem; }
   @media (max-width: 60rem) {

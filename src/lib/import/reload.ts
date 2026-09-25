@@ -18,8 +18,7 @@ function metaFrom(data: SiteData, coverId: number | null): BuildMeta {
     name: data.name === 'Untitled build' ? '' : data.name,
     startDate: data.startDate ?? '',
     description: data.description ?? '',
-    category: data.category ?? '',
-    tags: data.tags ?? [],
+    links: data.links ?? [],
     coverImageId: coverId,
     author: data.author ?? ''
   };

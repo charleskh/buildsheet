@@ -6,16 +6,27 @@
    * batching, the progress reporting and the per-file error handling live.
    * A phone with several hundred photos is the case this has to survive.
    */
-  import { processBatch, type ProgressReport } from '$lib/images/pipeline';
+  import {
+    processBatch,
+    processOne,
+    centredCrop,
+    COVER_ASPECT,
+    type ProgressReport,
+    type ProcessedImage
+  } from '$lib/images/pipeline';
   import { build } from '$lib/state/build.svelte';
 
   let {
     multiple = true,
     label = 'Add photos',
+    /** Cover photos keep their original bytes so the framing can be changed later,
+     *  and start framed to the shape the page renders them at. */
+    asCover = false,
     onadded
   }: {
     multiple?: boolean;
     label?: string;
+    asCover?: boolean;
     onadded?: (ids: number[]) => void;
   } = $props();
 
@@ -30,12 +41,27 @@
 
     failures = [];
     const startId = build.claimImageIds(files.length);
-    const processed = await processBatch(
-      files,
-      startId,
-      (report) => (progress = report),
-      (file, error) => failures.push(`${file.name}: ${error.message}`)
-    );
+
+    let processed: ProcessedImage[];
+    if (asCover) {
+      progress = { done: 0, total: 1, currentName: files[0].name };
+      try {
+        const bitmap = await createImageBitmap(files[0], { imageOrientation: 'from-image' });
+        const crop = centredCrop(bitmap.width, bitmap.height, COVER_ASPECT);
+        bitmap.close();
+        processed = [await processOne(files[0], startId, { crop, keepSource: true })];
+      } catch (error) {
+        failures.push(`${files[0].name}: ${error instanceof Error ? error.message : String(error)}`);
+        processed = [];
+      }
+    } else {
+      processed = await processBatch(
+        files,
+        startId,
+        (report) => (progress = report),
+        (file, error) => failures.push(`${file.name}: ${error.message}`)
+      );
+    }
 
     build.addImages(processed);
     onadded?.(processed.map((p) => p.id));

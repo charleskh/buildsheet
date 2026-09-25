@@ -31,7 +31,7 @@
     <div class="bs-row">
       <input class="row-key" type="text" bind:value={item.key} oninput={() => build.touch()} placeholder="Part" />
       <input class="row-value" type="text" bind:value={item.value} oninput={() => build.touch()} placeholder="What it is" />
-      <input class="row-price" type="text" bind:value={item.price} oninput={() => build.touch()} placeholder="Price" />
+      <input class="row-price" type="text" bind:value={item.price} oninput={() => build.touch()} placeholder="Price (optional)" />
       <div class="bs-row-actions">
         <button type="button" onclick={() => move(i, -1)} disabled={i === 0} aria-label="Move up">↑</button>
         <button type="button" onclick={() => move(i, 1)} disabled={i === block.items.length - 1} aria-label="Move down">↓</button>

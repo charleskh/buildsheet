@@ -28,7 +28,6 @@ interface StsBuild {
   content?: string;
   user_display_name?: string;
   image_url?: string;
-  tags?: { display_name: string }[];
 }
 
 interface StsImage {
@@ -124,8 +123,7 @@ export async function importFromSeeTheSpecs(
     name: stsBuild.name ?? '',
     startDate: stsBuild.start_date ?? '',
     description: stsBuild.description ?? '',
-    category: '',
-    tags: (stsBuild.tags ?? []).map((tag) => tag.display_name),
+    links: [],
     coverImageId: images[0]?.id ?? null,
     author: stsBuild.user_display_name ?? ''
   };

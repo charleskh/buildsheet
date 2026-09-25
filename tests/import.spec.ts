@@ -30,7 +30,6 @@ const STS_BUILD = {
   start_date: '2017-10-10',
   description: 'Regular cab, short bed, 1-ton axles and 40 inch tires.',
   user_display_name: 'DaChy',
-  tags: [{ display_name: 'Ford' }, { display_name: 'Rock crawler' }],
   content: JSON.stringify({
     version: 1,
     blocks: [
@@ -72,7 +71,6 @@ test('imports a seethespecs build and drops references to images that no longer 
   // The build lands in the editor with its metadata intact.
   await expect(page.getByPlaceholder('1978 F150 4x4')).toHaveValue('1978 F150 4x4', { timeout: 20_000 });
   await expect(page.getByPlaceholder('Shown as the byline')).toHaveValue('DaChy');
-  await expect(page.locator('.bs-tags')).toContainText('Ford');
 
   // The gallery editor reports the dangling references rather than rendering blanks.
   await expect(page.locator('.field-warning')).toContainText('2 photo references');

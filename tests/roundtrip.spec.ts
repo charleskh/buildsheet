@@ -179,3 +179,99 @@ test('the generated page lays out correctly and does not collide with DaisyUI', 
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test('links, including email, reach the generated page', async ({ page, context }) => {
+  await page.goto(MAKER);
+  await page.getByRole('button', { name: 'Start', exact: true }).click();
+  await page.getByPlaceholder('1978 F150 4x4').fill('Links Test');
+
+  await page.getByRole('button', { name: 'Add a link' }).click();
+  await page.getByRole('button', { name: 'Instagram', exact: true }).click();
+  await page.getByPlaceholder('https://instagram.com/yourhandle').fill('instagram.com/dachy');
+
+  await page.getByRole('button', { name: 'Add a link' }).click();
+  await page.getByRole('button', { name: 'Email', exact: true }).click();
+  await page.getByPlaceholder('you@example.com').fill('me@example.com');
+
+  await page.getByRole('button', { name: 'Publish' }).click();
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download my site' }).click();
+
+  const dir = mkdtempSync(join(tmpdir(), 'buildsheet-links-'));
+  try {
+    const zipPath = join(dir, 'site.zip');
+    await (await downloadPromise).saveAs(zipPath);
+    execFileSync('unzip', ['-q', zipPath, '-d', join(dir, 'site')]);
+
+    const site = await context.newPage();
+    await site.goto(pathToFileURL(join(dir, 'site/index.html')).href);
+
+    // A bare handle is stored as typed and becomes an absolute URL at render time.
+    await expect(site.getByRole('link', { name: 'Instagram' })).toHaveAttribute(
+      'href',
+      'https://instagram.com/dachy'
+    );
+    // Email is stored bare for easy typing and only becomes mailto: on the page.
+    await expect(site.getByRole('link', { name: 'Email' })).toHaveAttribute(
+      'href',
+      'mailto:me@example.com'
+    );
+    // External links must not hand the opener a window reference.
+    await expect(site.getByRole('link', { name: 'Instagram' })).toHaveAttribute('target', '_blank');
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('a dangerous link is dropped rather than rendered', async ({ page }) => {
+  await page.goto(MAKER);
+  await page.getByRole('button', { name: 'Start', exact: true }).click();
+  await page.getByPlaceholder('1978 F150 4x4').fill('Scheme Test');
+  await page.getByRole('button', { name: 'Add a link' }).click();
+  await page.getByRole('button', { name: 'Website', exact: true }).click();
+  await page.getByPlaceholder('https://example.com').fill('javascript:alert(1)');
+
+  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.getByRole('button', { name: 'Build' }).click();
+
+  // The value is kept in the form, but nothing renders it as a link.
+  const rendered = await page.evaluate(() =>
+    Array.from(document.querySelectorAll('a')).map((a) => a.getAttribute('href') ?? '')
+  );
+  expect(rendered.some((href) => href.toLowerCase().startsWith('javascript:'))).toBe(false);
+});
+
+test('the cover photo is framed, not squashed', async ({ page, context }) => {
+  await page.goto(MAKER);
+  await page.getByRole('button', { name: 'Start', exact: true }).click();
+  await page.getByPlaceholder('1978 F150 4x4').fill('Crop Test');
+
+  // A tall photo is the case that looked mangled: filling a wide banner with it
+  // takes a band out of the middle.
+  await attachPhoto(page, 0, 1200, 2000);
+  await expect(page.locator('img.bs-cover')).toBeVisible({ timeout: 15_000 });
+
+  await page.getByRole('button', { name: 'Adjust framing' }).click();
+  await expect(page.getByRole('dialog', { name: 'Frame your cover photo' })).toBeVisible();
+  await page.getByRole('button', { name: 'Use this framing' }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+
+  await page.getByRole('button', { name: 'Publish' }).click();
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download my site' }).click();
+
+  const dir = mkdtempSync(join(tmpdir(), 'buildsheet-crop-'));
+  try {
+    const zipPath = join(dir, 'site.zip');
+    await (await downloadPromise).saveAs(zipPath);
+    execFileSync('unzip', ['-q', zipPath, '-d', join(dir, 'site')]);
+
+    const data = JSON.parse(readFileSync(join(dir, 'site/content/build.json'), 'utf8'));
+    // The stored cover is already the page's shape, so the page never re-crops it.
+    const ratio = data.images[0].width / data.images[0].height;
+    expect(ratio).toBeGreaterThan(1.7);
+    expect(ratio).toBeLessThan(1.85);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

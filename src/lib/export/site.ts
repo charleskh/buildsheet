@@ -94,9 +94,8 @@ export function buildSite(): SiteBundle {
     name: meta.name || 'Untitled build',
     description: meta.description,
     startDate: meta.startDate,
-    category: meta.category,
     author: meta.author,
-    tags: [...meta.tags],
+    links: snapshot(meta.links).filter((link) => link.value.trim() !== ''),
     coverImage: cover
       ? { url: cover.files.full.path, mid: cover.files.mid.path, thumb: cover.files.thumb.path }
       : null,

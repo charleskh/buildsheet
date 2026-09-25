@@ -11,13 +11,58 @@ import { createEmptyBlock } from '$lib/features/blocks/types';
 import type { BuildImage } from '$lib/features/builds/types';
 import type { ProcessedImage, TierName } from '$lib/images/pipeline';
 
+/** The kinds of link offered, in the order the picker shows them. */
+export const LINK_KINDS = [
+  'instagram',
+  'youtube',
+  'facebook',
+  'tiktok',
+  'x',
+  'forum',
+  'website',
+  'email'
+] as const;
+
+export type LinkKind = (typeof LINK_KINDS)[number];
+
+export const LINK_LABELS: Record<LinkKind, string> = {
+  instagram: 'Instagram',
+  youtube: 'YouTube',
+  facebook: 'Facebook',
+  tiktok: 'TikTok',
+  x: 'X',
+  forum: 'Build thread',
+  website: 'Website',
+  email: 'Email'
+};
+
+/** Placeholder text per kind, so the field shows the shape of a correct answer. */
+export const LINK_PLACEHOLDERS: Record<LinkKind, string> = {
+  instagram: 'https://instagram.com/yourhandle',
+  youtube: 'https://youtube.com/@yourchannel',
+  facebook: 'https://facebook.com/yourpage',
+  tiktok: 'https://tiktok.com/@yourhandle',
+  x: 'https://x.com/yourhandle',
+  forum: 'https://forum.example.com/threads/my-build',
+  website: 'https://example.com',
+  email: 'you@example.com'
+};
+
+export interface BuildLink {
+  kind: LinkKind;
+  /** A URL, or a bare email address when kind is 'email'. */
+  value: string;
+  /** Overrides the default label for this kind. */
+  label?: string;
+}
+
 export interface BuildMeta {
   name: string;
   /** ISO date, or empty when the person has not said. */
   startDate: string;
   description: string;
-  category: string;
-  tags: string[];
+  /** Where to find the owner. Shown in the page header. */
+  links: BuildLink[];
   /** Image id used as the page hero. */
   coverImageId: number | null;
   /** Shown as the byline on the generated page. */
@@ -29,11 +74,25 @@ export function emptyMeta(): BuildMeta {
     name: '',
     startDate: '',
     description: '',
-    category: '',
-    tags: [],
+    links: [],
     coverImageId: null,
     author: ''
   };
+}
+
+/**
+ * Turn a stored link value into an href.
+ *
+ * Email is stored bare so the field is easy to fill in, and only becomes a
+ * mailto: at render time. safeHref already allows that scheme.
+ */
+export function linkHref(link: BuildLink): string {
+  if (link.kind === 'email') {
+    const value = link.value.trim();
+    return value.startsWith('mailto:') ? value : `mailto:${value}`;
+  }
+  const value = link.value.trim();
+  return /^https?:\/\//i.test(value) ? value : `https://${value}`;
 }
 
 /** Where image URLs should point when rendering. */
@@ -114,6 +173,18 @@ class BuildStore {
     if (image) URL.revokeObjectURL(image.previewUrl);
     this.images = this.images.filter((i) => i.id !== id);
     if (this.meta.coverImageId === id) this.meta.coverImageId = this.images[0]?.id ?? null;
+    this.touch();
+  }
+
+  /** Swap an image for a new render of itself, keeping its id and position. */
+  replaceImage(next: ProcessedImage): void {
+    const i = this.images.findIndex((image) => image.id === next.id);
+    if (i < 0) {
+      this.images.push(next);
+    } else {
+      URL.revokeObjectURL(this.images[i].previewUrl);
+      this.images[i] = next;
+    }
     this.touch();
   }
 
