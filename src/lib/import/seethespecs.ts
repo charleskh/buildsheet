@@ -124,6 +124,7 @@ export async function importFromSeeTheSpecs(
     startDate: stsBuild.start_date ?? '',
     description: stsBuild.description ?? '',
     links: [],
+    siteUrl: '',
     coverImageId: images[0]?.id ?? null,
     author: stsBuild.user_display_name ?? ''
   };

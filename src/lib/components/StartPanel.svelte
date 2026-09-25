@@ -2,9 +2,17 @@
   import { loadFromZip } from '$lib/import/reload';
   import { importFromSeeTheSpecs, ImportBlockedError, type ImportProgress } from '$lib/import/seethespecs';
   import { UnsupportedZipError } from '$lib/export/unzip';
-  import { restoreDraft, clearDraft } from '$lib/state/persist';
+  import { openDraft, deleteDraft, startNewDraft, type DraftSummary } from '$lib/state/persist';
 
-  let { draft, ondone }: { draft: { savedAt: number; name: string } | null; ondone: () => void } = $props();
+  let {
+    drafts,
+    onrefresh,
+    ondone
+  }: {
+    drafts: DraftSummary[];
+    onrefresh: () => void;
+    ondone: () => void;
+  } = $props();
 
   let stsRef = $state('');
   let progress = $state<ImportProgress | null>(null);
@@ -12,14 +20,29 @@
   let error = $state('');
   let zipInput = $state<HTMLInputElement | null>(null);
 
-  async function doRestore() {
-    if (await restoreDraft()) ondone();
-    else error = 'That draft could not be opened.';
+  function when(ms: number): string {
+    if (!ms) return 'unknown';
+    const days = Math.floor((Date.now() - ms) / 86_400_000);
+    if (days === 0) return 'today';
+    if (days === 1) return 'yesterday';
+    if (days < 30) return `${days} days ago`;
+    return new Date(ms).toLocaleDateString();
   }
 
-  async function discardDraft() {
-    await clearDraft();
-    location.reload();
+  async function open(id: string) {
+    if (await openDraft(id)) ondone();
+    else error = 'That build could not be opened.';
+  }
+
+  async function remove(draft: DraftSummary) {
+    if (!confirm(`Delete "${draft.name}"? This only removes the copy saved in this browser.`)) return;
+    await deleteDraft(draft.id);
+    onrefresh();
+  }
+
+  function startFresh() {
+    startNewDraft();
+    ondone();
   }
 
   async function doImport() {
@@ -30,9 +53,10 @@
       message = `Brought across ${result.imported} photo${result.imported === 1 ? '' : 's'}.`;
       if (result.failed) message += ` ${result.failed} could not be fetched.`;
       if (result.danglingRefs) {
-        message += ` ${result.danglingRefs} photo references in the build point at images that no longer exist and were left out.`;
+        message += ` ${result.danglingRefs} photo references point at images that no longer exist and were left out.`;
       }
       progress = null;
+      startNewDraft();
       ondone();
     } catch (e) {
       progress = null;
@@ -47,6 +71,7 @@
     try {
       const result = await loadFromZip(file);
       message = `Loaded ${result.imported} photo${result.imported === 1 ? '' : 's'}.`;
+      startNewDraft();
       ondone();
     } catch (e) {
       error = e instanceof UnsupportedZipError ? e.message : 'That file could not be read.';
@@ -64,24 +89,32 @@
     </p>
   </section>
 
-  {#if draft}
+  {#if drafts.length}
     <section class="bs-card bs-highlight">
-      <h3>You have unsaved work</h3>
-      <p>
-        {draft.name || 'An unnamed build'}, last saved
-        {new Date(draft.savedAt).toLocaleString()}.
-      </p>
-      <div class="bs-row">
-        <button type="button" class="primary" onclick={doRestore}>Pick up where I left off</button>
-        <button type="button" onclick={discardDraft}>Start over</button>
-      </div>
+      <h3>Your builds</h3>
+      <p>Saved in this browser, on this machine.</p>
+      <ul class="bs-drafts">
+        {#each drafts as draft (draft.id)}
+          <li>
+            <button type="button" class="bs-open" onclick={() => open(draft.id)}>
+              <strong>{draft.name}</strong>
+              <span>
+                {draft.blockCount} section{draft.blockCount === 1 ? '' : 's'},
+                {draft.photoCount} photo{draft.photoCount === 1 ? '' : 's'},
+                saved {when(draft.savedAt)}
+              </span>
+            </button>
+            <button type="button" onclick={() => remove(draft)} aria-label="Delete {draft.name}">✕</button>
+          </li>
+        {/each}
+      </ul>
     </section>
   {/if}
 
   <section class="bs-card">
     <h3>Start a new build</h3>
     <p>An empty page to fill in.</p>
-    <button type="button" class="primary" onclick={ondone}>Start</button>
+    <button type="button" class="primary" onclick={startFresh}>Start</button>
   </section>
 
   <section class="bs-card">
@@ -120,6 +153,10 @@
   .bs-card p { margin: 0 0 0.75rem; color: var(--text-muted, #999); font-size: var(--text-sm, 0.875rem); }
   .bs-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
   .bs-row input { flex: 1 1 14rem; }
+  .bs-drafts { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+  .bs-drafts li { display: grid; grid-template-columns: 1fr auto; gap: 0.4rem; }
+  .bs-open { text-align: left; display: flex; flex-direction: column; gap: 0.15rem; padding: 0.5rem 0.65rem; }
+  .bs-open span { font-size: var(--text-xs, 0.75rem); color: var(--text-muted, #999); font-weight: 400; }
   .bs-progress { margin-top: 0.75rem; }
   .bs-bar { height: 6px; background: var(--surface-sunken, #333); overflow: hidden; }
   .bs-fill { height: 100%; background: var(--accent-primary, #bf8942); transition: width 120ms linear; }

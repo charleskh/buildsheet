@@ -13,6 +13,8 @@ import type { SiteData } from '../../viewer/types';
 import type { ContentBlock } from '$lib/features/blocks/types';
 import { makeZip, type ZipEntry } from './zip';
 import type { ProcessedImage } from '$lib/images/pipeline';
+import { manifestJson, feedJson, rssXml } from './feeds';
+import { siteEditorHtml } from './selfcopy';
 
 /** Escape for safe embedding inside a <script type="application/json"> tag. */
 function escapeForScriptTag(json: string): string {
@@ -95,6 +97,7 @@ export function buildSite(): SiteBundle {
     description: meta.description,
     startDate: meta.startDate,
     author: meta.author,
+    siteUrl: meta.siteUrl.trim(),
     links: snapshot(meta.links).filter((link) => link.value.trim() !== ''),
     coverImage: cover
       ? { url: cover.files.full.path, mid: cover.files.mid.path, thumb: cover.files.thumb.path }
@@ -122,7 +125,15 @@ export function buildSite(): SiteBundle {
   const entries: ZipEntry[] = [
     { path: 'index.html', data: encoder.encode(html) },
     { path: 'content/build.json', data: encoder.encode(JSON.stringify(data, null, 2)) },
-    { path: 'README.txt', data: encoder.encode(readme(data.name)) }
+    { path: 'README.txt', data: encoder.encode(readme(data.name)) },
+    // The editor travels with the site, so updating a build is "open your own
+    // page and click Edit" rather than "find the zip from last year".
+    { path: 'edit.html', data: encoder.encode(siteEditorHtml()) },
+    // Self-description, so a reader can follow the build and an aggregator can
+    // list it. Nothing here contacts anyone; it is read, never sent.
+    { path: 'manifest.json', data: encoder.encode(manifestJson(data)) },
+    { path: 'feed.json', data: encoder.encode(feedJson(data)) },
+    { path: 'rss.xml', data: encoder.encode(rssXml(data)) }
   ];
 
   for (const image of used) {
@@ -216,14 +227,21 @@ Open index.html in any web browser. It works offline.
 
 To change it later
 ------------------
-Open buildsheet again, choose "Load a site I made earlier", and give it the
-content/build.json file from this folder. Edit, then download a new copy.
+Go to your own web address and add /edit.html on the end. Your build opens in
+the editor with everything already in it. Change what you like, download it
+again, and upload it the same way you did the first time.
+
+That page only edits a copy in whoever's browser opened it. Nobody can change
+your live site without uploading to your hosting, which only you can do.
 
 What is in here
 ---------------
 index.html          the page itself, with your text built in
+edit.html           opens this build in the editor, from your own web address
 content/build.json  your build in a plain data file, used for editing later
 images/             your photos, in three sizes
+feed.json, rss.xml  so people can follow your build in a reader
+manifest.json       a short summary, for anyone listing builds
 
 Made with buildsheet. charleskh.github.io/buildsheet
 `;

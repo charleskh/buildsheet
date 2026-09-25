@@ -183,3 +183,51 @@ mangled.
 Cover images are the only ones that keep `sourceBytes`, so the framing can be
 changed later without picking the file again. Gallery photos deliberately do not:
 holding originals for a hundred of them is how a phone runs out of memory.
+
+## Updating a published build
+
+A published site carries `edit.html`, which is a copy of the maker with
+`data-buildsheet-mode="edit-site"` on the body. On load it fetches its own
+`content/build.json` and photos from the same origin and opens them in the
+editor. So the answer to "how do I update my build" is "go to your own address
+and click Edit", not "find the zip from last year".
+
+`edit.html` is produced by `siteEditorHtml()`, which clones the running page.
+That means a site always carries the exact version of the maker that built it,
+with nothing to keep in sync and nothing to fetch.
+
+**It reads, it never writes.** Anyone can open it, and what they get is a copy in
+their own browser. Publishing an update means uploading to hosting, which only
+the owner can do. The notice on screen says this plainly and tells a non-owner
+they are welcome to use the build as a template, because that is a real and
+useful thing to do rather than a loophole to apologise for.
+
+It needs http. A page opened from `file://` cannot fetch a sibling file, and the
+error message says so and points at the zip instead.
+
+## Feeds and discovery
+
+Every site publishes `manifest.json` (a small summary), `feed.json` (JSON Feed
+1.1) and `rss.xml`, and links the last two from its head.
+
+**Discovery is pull, never push.** A site describes itself; nothing is sent from
+the maker and no site ever contacts anyone. Being listed somewhere stays a
+deliberate act by the owner. Keep it that way: the privacy claim on the page is
+only true while it is.
+
+Timeline entries become feed items, because a timeline is the update log of a
+build. A build with no timeline gets one item describing itself.
+
+**Never hand a timeline date to `Date.parse` and trust it.**
+`Date.parse("Spring 2019")` returns 1 January 2019 rather than failing, because
+the engine ignores the word it does not understand and keeps the year. Publishing
+that as a precise date says something the person never did. Dates are matched
+against explicit patterns first and left undated otherwise. An undated item is
+honest; an invented one is not.
+
+## Saved builds
+
+IndexedDB holds several builds keyed by id, not one draft, so returning to the
+maker lists everything made on that machine. `migrateLegacyDraft` moves a record
+from the earlier single-draft format, because someone who used the maker before
+that change would otherwise open it to an empty list.

@@ -110,6 +110,16 @@
       This page is plain HTML and images. It needs no server and no account, and it keeps working
       whether or not those links do.
     </p>
+    <p class="bs-footer-note">
+      <a href="edit.html">Edit this build</a>
+      ·
+      <a href="feed.json">JSON feed</a>
+      ·
+      <a href="rss.xml">RSS</a>
+      <span class="bs-footer-aside">
+        Editing opens a copy in your own browser. It cannot change this page.
+      </span>
+    </p>
   </footer>
 </div>
 
@@ -159,6 +169,7 @@
   }
   .bs-site-footer { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border-muted, #333); color: var(--text-muted, #999); font-size: var(--text-sm, 0.875rem); }
   .bs-footer-note { font-size: var(--text-xs, 0.75rem); }
+  .bs-footer-aside { display: block; margin-top: 0.15rem; opacity: 0.75; }
   .bs-lightbox {
     position: fixed; inset: 0; background: rgba(0, 0, 0, 0.92); z-index: 999;
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem; padding: 1rem;

@@ -19,6 +19,7 @@ function metaFrom(data: SiteData, coverId: number | null): BuildMeta {
     startDate: data.startDate ?? '',
     description: data.description ?? '',
     links: data.links ?? [],
+    siteUrl: data.siteUrl ?? '',
     coverImageId: coverId,
     author: data.author ?? ''
   };
@@ -47,8 +48,9 @@ async function imagesFromEntries(
       type: 'image/jpeg'
     });
     try {
-      const processed = await processOne(file, record.id);
-      out.push(processed);
+      // The cover keeps its bytes so its framing stays adjustable after reloading.
+      const isCover = Boolean(data.coverImage && paths.full === data.coverImage.url);
+      out.push(await processOne(file, record.id, { keepSource: isCover }));
     } catch {
       // A photo that will not decode is left out rather than stopping the load.
     }

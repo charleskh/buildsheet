@@ -17,6 +17,8 @@ export interface SiteData {
   description: string;
   startDate: string;
   author: string;
+  /** Canonical address of this site, when its owner supplied one. */
+  siteUrl?: string;
   /** Where to find the owner, shown in the page header. */
   links: BuildLink[];
   coverImage: { url: string; mid: string; thumb: string } | null;

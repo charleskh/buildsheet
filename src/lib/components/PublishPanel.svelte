@@ -74,6 +74,21 @@
     {/if}
   {/if}
 
+  <label class="form-field bs-address">
+    <span>Your web address (optional)</span>
+    <input
+      type="url"
+      bind:value={build.meta.siteUrl}
+      oninput={() => build.touch()}
+      placeholder="https://my-build.pages.dev"
+    />
+  </label>
+  <p class="field-hint">
+    Only needed if you want people to be able to follow your build in a news reader, or to list it
+    somewhere. You can leave it blank now and fill it in after you know the address. Nothing is sent
+    anywhere either way.
+  </p>
+
   <ol class="bs-steps">
     <li class:bs-done={downloaded}>
       <h3>Download your site</h3>
@@ -103,6 +118,19 @@
       <p class="field-hint">
         If you close the tab before claiming, nothing is lost. Drag the same zip on again and start
         the hour over.
+      </p>
+    </li>
+
+    <li>
+      <h3>Later: updating your build</h3>
+      <p>
+        Add <code>/edit.html</code> to the end of your web address and your build opens in the
+        editor with everything already in it. Change what you like, download it again, and upload it
+        the same way. There is also an "Edit this build" link in the footer of your page.
+      </p>
+      <p class="field-hint">
+        That page only ever edits a copy in whoever's browser opened it. Nobody can change your live
+        site without uploading to your hosting, which only you can do.
       </p>
     </li>
 
@@ -140,6 +168,8 @@
 <style>
   .bs-publish { display: flex; flex-direction: column; gap: 1.5rem; }
   .bs-summary { color: var(--text-muted, #999); margin: 0; }
+  .bs-address { max-width: 28rem; }
+  code { background: var(--surface-sunken, #0a0a0a); padding: 0 0.25rem; }
   .bs-steps { display: flex; flex-direction: column; gap: 1rem; padding-left: 1.25rem; margin: 0; }
   .bs-steps li { padding-left: 0.25rem; }
   .bs-steps h3 { margin: 0 0 0.25rem; font-size: var(--text-lg, 1.125rem); }

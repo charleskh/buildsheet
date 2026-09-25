@@ -67,6 +67,9 @@ export interface BuildMeta {
   coverImageId: number | null;
   /** Shown as the byline on the generated page. */
   author: string;
+  /** Where this build will live, if the person knows yet. Feeds need absolute
+   *  addresses to be useful in a reader, and only the owner can supply one. */
+  siteUrl: string;
 }
 
 export function emptyMeta(): BuildMeta {
@@ -76,7 +79,8 @@ export function emptyMeta(): BuildMeta {
     description: '',
     links: [],
     coverImageId: null,
-    author: ''
+    author: '',
+    siteUrl: ''
   };
 }
 

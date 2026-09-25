@@ -74,8 +74,9 @@ test('work in progress survives closing the tab', async ({ page, context }) => {
 
   const second = await context.newPage();
   await second.goto(MAKER);
-  await expect(second.locator('.bs-card.bs-highlight')).toContainText('Autosave Test', { timeout: 15_000 });
-  await second.getByRole('button', { name: 'Pick up where I left off' }).click();
+  // Saved builds now appear as a list rather than a single "resume" prompt.
+  await expect(second.locator('.bs-drafts')).toContainText('Autosave Test', { timeout: 15_000 });
+  await second.locator('.bs-open', { hasText: 'Autosave Test' }).click();
   await expect(second.getByPlaceholder('1978 F150 4x4')).toHaveValue('Autosave Test');
   await expect(second.locator('img.bs-cover')).toBeVisible();
   expect(warnings.filter((w) => w.includes('could not save'))).toEqual([]);
